@@ -8,8 +8,29 @@ package main
 import (
 	httpreq "github.com/wahyuhadi/httpreq"
 	"fmt"
-	"io/ioutil"
+	"encoding/json"
 )
+
+```
+
+### Example Response Interface for api
+
+```go
+
+// Example Response for url  https://www.googleapis.com/drive/v2/files/folderId/children/childId
+type Responses struct {
+	Error struct {
+		Errors []struct {
+			Domain       string `json:"domain"`
+			Reason       string `json:"reason"`
+			Message      string `json:"message"`
+			LocationType string `json:"locationType"`
+			Location     string `json:"location"`
+		} `json:"errors"`
+		Code    int    `json:"code"`
+		Message string `json:"message"`
+	} `json:"error"`
+} 
 ```
 
 ### example main
@@ -23,13 +44,8 @@ func main(){
 	}
 
 	defer r.Body.Close()
-	responseData, err := ioutil.ReadAll(r.Body)
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-	responseString := string(responseData)
-	fmt.Println(responseString)
-
+	Res := new(Responses)
+	json.NewDecoder(r.Body).Decode(Res) // Decode for Interface Response
+	fmt.Println(Res.Error.Message) // Print message in response
 }
 ```
